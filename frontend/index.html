@@ -1,0 +1,1193 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salomón Sport - Inventario</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080b13;
+      --panel: rgba(15, 23, 42, 0.94);
+      --border: rgba(255, 191, 64, 0.9);
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #fbbf24;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Roboto', sans-serif;
+      background: url('assets/fondo.jpeg') center/cover no-repeat fixed;
+      position: relative;
+      color: #111827;
+    }
+
+    body::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.28), rgba(7, 10, 21, 0.50));
+      z-index: 0;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      padding: 32px 24px;
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(18px);
+      border-right: 1px solid rgba(255, 191, 64, 0.18);
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      z-index: 1;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      text-align: center;
+      margin-top: 12px;
+      width: 100%;
+    }
+
+    .brand-logo {
+      width: 200px;
+      height: 200px;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.42);
+      padding: 1px;
+      box-shadow: 0 100px 80px rgba(0, 0, 0, 0.12);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 2.25rem;
+      line-height: 1.05;
+      letter-spacing: 0.03em;
+      font-family: 'Oswald', sans-serif;
+      color: #111827;
+      word-break: break-word;
+    }
+
+    .brand div {
+      width: 100%;
+      max-width: 240px;
+    }
+
+    .brand p {
+      margin: 8px 0 0;
+      color: #0f172a;
+      font-size: 1rem;
+      line-height: 1.45;
+      max-width: 240px;
+      word-break: break-word;
+    }
+
+    .sidebar-toggler {
+      align-self: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .nav-menu {
+      display: grid;
+      gap: 12px;
+    }
+
+    .nav-menu.collapsed {
+      display: none;
+    }
+
+    .sidebar-toggler {
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 191, 64, 0.35);
+      background: rgba(241, 245, 249, 0.95);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+      margin-left: auto;
+    }
+
+    .sidebar-toggler:hover {
+      background: rgba(251, 191, 36, 0.18);
+      transform: scale(1.02);
+    }
+
+    .sidebar-toggler span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: #111827;
+      border-radius: 999px;
+      position: relative;
+    }
+
+    .sidebar-toggler span:nth-child(1) {
+      transform: translateY(-5px);
+    }
+
+    .sidebar-toggler span:nth-child(3) {
+      transform: translateY(5px);
+    }
+
+    .nav-item {
+      display: block;
+      padding: 14px 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(255, 191, 64, 0.35);
+      color: #111827;
+      font-weight: 600;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      background: rgba(255, 255, 255, 1);
+      border-color: rgba(251, 191, 36, 0.75);
+      transform: translateX(2px);
+    }
+
+    .sidebar-note {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(255, 191, 36, 0.3);
+      padding: 18px;
+      border-radius: 18px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #0f172a;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+    }
+
+    .content {
+      padding: 32px 40px;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .topbar h2 {
+      margin: 0 0 6px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem;
+      color: #fbbf24;
+    }
+
+    .topbar p {
+      margin: 0;
+      color: #fbbf24;
+      max-width: 560px;
+      line-height: 1.7;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      background: rgba(251, 191, 36, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(251, 191, 36, 0.25);
+      margin-bottom: 14px;
+    }
+
+    .user-panel {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 14px 18px;
+      border-radius: 18px;
+    }
+
+    .user-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      display: grid;
+      place-items: center;
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .user-info {
+      display: grid;
+      gap: 4px;
+      color: #fbbf24;
+    }
+
+    .user-info strong {
+      font-size: 0.95rem;
+      display: block;
+      color: #fbbf24;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(255, 191, 64, 0.35);
+      border-radius: 26px;
+      padding: 24px;
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.12);
+    }
+
+    .card h3 {
+      margin: 0 0 14px;
+      font-size: 0.98rem;
+      color: #0f172a;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.92);
+      border: 4px solid rgba(255, 191, 64, 0.75);
+      border-radius: 32px;
+      padding: 26px;
+      margin-bottom: 28px;
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.15);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .panel-actions {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .action-button {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.06);
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      position: relative;
+    }
+
+    .action-button:hover {
+      background: rgba(251, 191, 36, 0.18);
+      transform: scale(1.03);
+    }
+
+    .hamburger {
+      width: 18px;
+      height: 12px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .hamburger::before,
+    .hamburger::after,
+    .hamburger span {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: var(--text);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .action-button.hover .hamburger::before {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .action-button.hover .hamburger span {
+      opacity: 0;
+    }
+
+    .action-button.hover .hamburger::after {
+      transform: rotate(-45deg) translate(7px, -6px);
+    }
+
+    .action-menu {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      min-width: 200px;
+      background: rgba(222, 238, 5, 0.95);
+      border: 1px solid rgba(240, 224, 9, 0.08);
+      border-radius: 18px;
+      box-shadow: 0 20px 45px rgba(245, 229, 3, 0.25);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(-6px);
+      transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+      z-index: 2;
+    }
+
+    .action-menu.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .action-menu::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      right: 16px;
+      width: 12px;
+      height: 12px;
+      background: rgba(245, 241, 7, 0.95);
+      transform: rotate(45deg);
+      border-left: 1px solid rgba(231, 209, 6, 0.08);
+      border-top: 1px solid rgba(228, 231, 13, 0.952);
+    }
+
+    .action-item {
+      display: block;
+      padding: 20
+      px 16px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.95rem;
+      border-bottom: 1px solid rgba(236, 233, 8, 0.06);
+      transition: background 0.2s ease;
+    }
+
+    .action-item:last-child {
+      border-bottom: none;
+    }
+
+    .action-item:hover {
+      background: rgba(218, 233, 5, 0.06);
+    }
+
+    .panel-header h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      letter-spacing: 0.02em;
+      color: #0f172a;
+    }
+
+    .panel-header small {
+      color: #040730;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .form-grid input,
+    .form-grid select {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid #d1d5db;
+      background: #f8fafc;
+      color: #111827;
+      outline: none;
+      font-size: 0.95rem;
+    }
+
+    .form-grid input::placeholder,
+    .form-grid select::placeholder {
+      color: #64748b;
+    }
+
+    .form-grid button {
+      width: 100%;
+      padding: 14px 16px;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #111827, #0f172a);
+      color: #f9fafb;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-grid button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 35px rgba(251, 191, 36, 0.2);
+    }
+
+    .notification {
+      margin-bottom: 18px;
+      padding: 14px 18px;
+      border-radius: 18px;
+      font-size: 0.95rem;
+      border: 1px solid transparent;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .notification.hidden {
+      display: none;
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+
+    .notification.success {
+      background: rgba(82, 236, 77, 0.12);
+      color: #9ce608;
+      border-color: rgba(35, 241, 8, 0.28);
+    }
+
+    .notification.error {
+      background: rgba(230, 73, 73, 0.12);
+      color: #e70f0f;
+      border-color: rgba(239, 68, 68, 0.28);
+    }
+
+    .product-grid {
+      overflow-x: auto;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+    }
+
+    .product-card {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(229, 231, 235, 0.7);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 24px 45px rgba(0, 0, 0, 0.12);
+    }
+
+    .product-card-image {
+      padding: 26px;
+      background: rgba(255, 255, 255, 0.03);
+      display: grid;
+      place-items: center;
+    }
+
+    .product-card-image img {
+      width: 100%;
+      max-width: 180px;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .product-card-body {
+      display: grid;
+      gap: 12px;
+      padding: 20px 20px 24px;
+    }
+
+    .product-status {
+      width: fit-content;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid rgba(203, 213, 225, 0.5);
+      background: rgba(241, 245, 249, 0.9);
+      color: #111827;
+    }
+
+    .product-status.available {
+      color: #30f708;
+      border-color: rgb(12, 231, 60);
+    }
+
+    .product-status.low-stock {
+      color: #f00707;
+      border-color: rgba(240, 7, 7, 0.3);
+    }
+
+    .product-card h4 {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.3;
+      text-transform: capitalize;
+    }
+
+    .product-category {
+      margin: 0;
+      color: #0f172a;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      text-transform: capitalize;
+    }
+
+    .product-meta {
+      margin: 0;
+      font-size: 0.95rem;
+      color: #07163f;
+    }
+
+    .product-card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 0;
+      table-layout: fixed;
+    }
+
+    th, td {
+      padding: 16px 14px;
+      text-align: left;
+      border-bottom: 1px solid rgba(7, 22, 70, 0.08);
+      word-break: break-word;
+    }
+
+    th {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #030c24;
+    }
+
+    td {
+      color: #04142e;
+      font-size: 0.95rem;
+    }
+
+    .table-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-small {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+
+    .btn-edit {
+      background: rgba(75, 201, 44, 0.12);
+      color: #5de41f;
+      border-color: rgba(59, 246, 90, 0.25);
+    }
+
+    .btn-delete {
+      background: rgba(197, 21, 21, 0.12);
+      color: #d62a2a;
+      border-color: rgba(239, 68, 68, 0.25);
+    }
+
+    .small-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .metric-list {
+      display: grid;
+      gap: 18px;
+    }
+
+    .metric-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 20px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .metric-item span {
+      display: block;
+      color: #040242;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .metric-item strong {
+      font-size: 1.4rem;
+      display: block;
+      color: #030b1d;
+    }
+
+    .footer {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    @media (max-width: 1024px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        order: 2;
+      }
+
+      .content {
+        order: 1;
+        padding: 24px;
+      }
+
+      .summary-grid,
+      .small-grid,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <button type="button" class="sidebar-toggler" id="sidebar-toggler" aria-label="Abrir menú hamburguesa">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="brand">
+      <img src="assets/logo.png" alt="Logo Salomón Sport" class="brand-logo">
+      
+       
+        
+        
+        
+
+    <nav class="nav-menu collapsed">
+      <a href="index.html" class="nav-item active">Inicio</a>
+      <a href="dashboard.html" class="nav-item">Dashboard</a>
+      <a href="#inventario" class="nav-item">Inventario</a>
+      <a href="#usuarios" class="nav-item">Usuarios</a>
+      <a href="#procesos" class="nav-item">Procesos</a>
+      <a href="login.html" class="nav-item">Cerrar sesión</a>
+    </nav>
+    
+
+
+
+    <div class="sidebar-note">
+      <strong>Nota:</strong> Este prototipo es una demostración de diseño UI/UX para la gestión de inventario deportivo. No incluye funcionalidades reales de backend o base de datos.
+    </div>
+  </aside>      
+    
+
+  <main class="content">
+    <header class="topbar">
+      <div>
+        <span class="badge">Proyecto Aula</span>
+        <h2>Salomón Sport</h2>
+        <p>Registra, consulta y administra productos del almacén deportivo, controla usuarios y procesos con una interfaz clara y consistente.</p>
+      </div>
+      <div class="user-panel">
+        <div class="user-avatar">SS</div>
+        <div class="user-info">
+          <strong>Administrador</strong>
+          <span>Activo</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="summary-grid">
+      <article class="card">
+        <h3>Total de Productos</h3>
+        <p>4,250</p>
+      </article>
+      <article class="card">
+        <h3>Valor de Inventario</h3>
+        <p>$412,380</p>
+      </article>
+      <article class="card">
+        <h3>Procesos Activos</h3>
+        <p>12</p>
+      </article>
+      <article class="card">
+        <h3>Usuarios Registrados</h3>
+        <p>8</p>
+      </article>
+    </section>
+
+    <section id="inventario" class="panel">
+      <div class="panel-header">
+        <div>
+          <h3>Gestión de Inventario</h3>
+          <small>Registra nuevos productos y consulta el stock actual.</small>
+        </div>
+        <div class="panel-actions">
+          <button type="button" class="action-button" id="action-toggle" aria-haspopup="true" aria-label="Mostrar funciones de inventario">
+            <div class="hamburger">
+              <span></span>
+            </div>
+          </button>
+          <div class="action-menu" id="action-menu" aria-label="Funciones del inventario">
+            <a href="#" class="action-item">Agregar producto</a>
+            <a href="#" class="action-item">Filtrar stock</a>
+            <a href="#" class="action-item">Exportar inventario</a>
+          </div>
+        </div>
+        <a href="dashboard.html" class="nav-item">Ir a Dashboard</a>
+      </div>
+
+      <form class="form-grid" id="product-form">
+        <input id="product-name" type="text" placeholder="Nombre del producto" aria-label="Nombre del producto" required>
+        <input id="product-price" type="number" placeholder="Precio" aria-label="Precio" required>
+        <input id="product-stock" type="number" placeholder="Stock" aria-label="Stock" required>
+        <button type="submit">Agregar Producto</button>
+      </form>
+
+      <div id="product-notification" class="notification hidden" role="status" aria-live="polite"></div>
+
+      <div class="product-grid">
+        <article class="product-card">
+          <div class="product-card-image">
+            <img src="assets/balon-futbol.png" alt="Balón de fútbol">
+          </div>
+          <div class="product-card-body">
+            <span class="product-status available">Disponible</span>
+            <h4>balon de futbol</h4>
+            <p class="product-category">Balón de fútbol</p>
+            <p class="product-meta"><strong>$289.900</strong> · 18 en stock</p>
+            <div class="product-card-actions">
+              <button class="btn-small btn-edit">Editar</button>
+              <button class="btn-small btn-delete">Eliminar</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-card-image">
+            <img src="assets/tenis-mesa.png" alt="Tenis de mesa">
+          </div>
+          <div class="product-card-body">
+            <span class="product-status available">Disponible</span>
+            <h4>raqueta de tenis de mesa</h4>
+            <p class="product-category">Tenis de mesa</p>
+            <p class="product-meta"><strong>$89.900</strong> · 42 en stock</p>
+            <div class="product-card-actions">
+              <button class="btn-small btn-edit">Editar</button>
+              <button class="btn-small btn-delete">Eliminar</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-card-image">
+            <img src="assets/zapatos-futbol.png" alt="Zapatos de fútbol">
+          </div>
+          <div class="product-card-body">
+            <span class="product-status low-stock">Bajo stock</span>
+            <h4>zapatillas de futbol</h4>
+            <p class="product-category">Zapatos de fútbol</p>
+            <p class="product-meta"><strong>$199.900</strong> · 9 en stock</p>
+            <div class="product-card-actions">
+              <button class="btn-small btn-edit">Editar</button>
+              <button class="btn-small btn-delete">Eliminar</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-card-image">
+            <img src="assets/guantes-portero.png" alt="Guantes para portero">
+          </div>
+          <div class="product-card-body">
+            <span class="product-status available">Disponible</span>
+            <h4>guantes para portero</h4>
+            <p class="product-category">Guantes para portero</p>
+            <p class="product-meta"><strong>$159.900</strong> · 15 en stock</p>
+            <div class="product-card-actions">
+              <button class="btn-small btn-edit">Editar</button>
+              <button class="btn-small btn-delete">Eliminar</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-card-image">
+            <img src="assets/bandas-elasticas.png" alt="Bandas elásticas">
+          </div>
+          <div class="product-card-body">
+            <span class="product-status available">Disponible</span>
+            <h4>bandas elasticas</h4>
+            <p class="product-category">Bandas elásticas</p>
+            <p class="product-meta"><strong>$69.900</strong> · 25 en stock</p>
+            <div class="product-card-actions">
+              <button class="btn-small btn-edit">Editar</button>
+              <button class="btn-small btn-delete">Eliminar</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-card-image">
+            <img src="assets/mancuernas.png" alt="Mancuernas">
+          </div>
+          <div class="product-card-body">
+            <span class="product-status available">Disponible</span>
+            <h4>mancuernas</h4>
+            <p class="product-category">Mancuernas</p>
+            <p class="product-meta"><strong>$59.900</strong> · 12 en stock</p>
+            <div class="product-card-actions">
+              <button class="btn-small btn-edit">Editar</button>
+              <button class="btn-small btn-delete">Eliminar</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-card-image">
+            <img src="assets/colchonetas.png" alt="Colchonetas">
+          </div>
+          <div class="product-card-body">
+            <span class="product-status available">Disponible</span>
+            <h4>colchonetas</h4>
+            <p class="product-category">Colchonetas</p>
+            <p class="product-meta"><strong>$79.900</strong> · 8 en stock</p>
+            <div class="product-card-actions">
+              <button class="btn-small btn-edit">Editar</button>
+              <button class="btn-small btn-delete">Eliminar</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-card-image">
+            <img src="assets/trampolin-sportfitness.png" alt="Trampolín SportFitness">
+          </div>
+          <div class="product-card-body">
+            <span class="product-status available">Disponible</span>
+            <h4>trampolin sportfitness</h4>
+            <p class="product-category">Trampolín SportFitness</p>
+            <p class="product-meta"><strong>$119.900</strong> · 6 en stock</p>
+            <div class="product-card-actions">
+              <button class="btn-small btn-edit">Editar</button>
+              <button class="btn-small btn-delete">Eliminar</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-card-image">
+            <img src="assets/botella-sport.png" alt="Botella Sport">
+          </div>
+          <div class="product-card-body">
+            <span class="product-status available">Disponible</span>
+            <h4>botella sport</h4>
+            <p class="product-category">Botella Sport</p>
+            <p class="product-meta"><strong>$99.900</strong> · 30 en stock</p>
+            <div class="product-card-actions">
+              <button class="btn-small btn-edit">Editar</button>
+              <button class="btn-small btn-delete">Eliminar</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-card-image">
+            <img src="assets/conjunto-deportivo.png" alt="Conjunto deportivo">
+          </div>
+          <div class="product-card-body">
+            <span class="product-status available">Disponible</span>
+            <h4>conjunto deportivo</h4>
+            <p class="product-category">Conjunto deportivo</p>
+            <p class="product-meta"><strong>$349.900</strong> · 10 en stock</p>
+            <div class="product-card-actions">
+              <button class="btn-small btn-edit">Editar</button>
+              <button class="btn-small btn-delete">Eliminar</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-card-image">
+            <img src="assets/pelota-gimnasia.png" alt="Pelota de gimnasia">
+          </div>
+          <div class="product-card-body">
+            <span class="product-status available">Disponible</span>
+            <h4>pelota de gimnasia</h4>
+            <p class="product-category">Pelota de gimnasia</p>
+            <p class="product-meta"><strong>$69.900</strong> · 14 en stock</p>
+            <div class="product-card-actions">
+              <button class="btn-small btn-edit">Editar</button>
+              <button class="btn-small btn-delete">Eliminar</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="usuarios" class="panel small-grid">
+      <div class="metric-list">
+        <div class="metric-item">
+          <div>
+            <span>Usuarios activos</span>
+            <strong>8</strong>
+          </div>
+          <span>Control de accesos</span>
+        </div>
+        <div class="metric-item">
+          <div>
+            <span>Roles definidos</span>
+            <strong>3</strong>
+          </div>
+          <span>Administrador, Encargado, Visitante</span>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th style="font-size: 12px;">Nombre</th>
+<th style="font-size: 14px;">Correo</th>
+<th style="font-size: 14px;">Rol</th>
+<th style="font-size: 14px;">Estado</th>
+<th style="font-size: 14px;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>María Salome</td>
+              <td>maria@sports.com</td>
+              <td>Administrador</td>
+              <td>Activo</td>
+              <td>
+                <div class="table-actions">
+                  <button class="btn-small btn-edit">Editar</button>
+                  <button class="btn-small btn-delete">Eliminar</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Salomon Jesus</td>
+              <td>Salomon@sports.com</td>
+              <td>Encargado</td>
+              <td>Activo</td>
+              <td>
+                <div class="table-actions">
+                  <button class="btn-small btn-edit">Editar</button>
+                  <button class="btn-small btn-delete">Eliminar</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="procesos" class="panel">
+      <div class="panel-header">
+        <div>
+          <h3>Gestión de Procesos</h3>
+          <small>Visualiza el estado de los procesos de entrada y salida de mercancía.</small>
+        </div>
+      </div>
+
+      <div class="summary-grid">
+        <article class="card">
+          <h3>Entradas Pendientes</h3>
+          <p>7</p>
+        </article>
+        <article class="card">
+          <h3>Salidas Programadas</h3>
+          <p>5</p>
+        </article>
+        <article class="card">
+          <h3>Recepciones Finalizadas</h3>
+          <p>32</p>
+        </article>
+        <article class="card">
+          <h3>Órdenes en Proceso</h3>
+          <p>4</p>
+        </article>
+      </div>
+    </section>
+
+    <footer class="footer">
+      Guía de instalación en Windows disponible en el repositorio. Esta interfaz se diseñó según principios UI/UX con estructura clara, legibilidad y acciones accesibles.
+    </footer>
+  </main>
+</div>
+
+<script>
+  const productForm = document.getElementById('product-form');
+  const productGrid = document.querySelector('.product-grid');
+  const notification = document.getElementById('product-notification');
+
+  function showNotification(message, type) {
+    notification.textContent = message;
+    notification.className = `notification ${type}`;
+    notification.classList.remove('hidden');
+
+    clearTimeout(window.notificationTimer);
+    window.notificationTimer = setTimeout(() => {
+      notification.classList.add('hidden');
+    }, 3200);
+  }
+
+  function createProductCard(name, price, stock) {
+    const card = document.createElement('article');
+    card.className = 'product-card';
+    card.innerHTML = `
+      <div class="product-card-image">
+        <img src="assets/logo.png" alt="${name}">
+      </div>
+      <div class="product-card-body">
+        <span class="product-status ${stock > 5 ? 'available' : 'low-stock'}">${stock > 5 ? 'Disponible' : 'Bajo stock'}</span>
+        <h4>${name}</h4>
+        <p class="product-category">Producto creado</p>
+        <p class="product-meta"><strong>${price}</strong> · ${stock} en stock</p>
+        <div class="product-card-actions">
+          <button class="btn-small btn-edit">Editar</button>
+          <button class="btn-small btn-delete">Eliminar</button>
+        </div>
+      </div>
+    `;
+    return card;
+  }
+
+  productForm.addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const nameInput = document.getElementById('product-name');
+    const priceInput = document.getElementById('product-price');
+    const stockInput = document.getElementById('product-stock');
+
+    const name = nameInput.value.trim();
+    const priceValue = priceInput.value.trim();
+    const stockValue = stockInput.value.trim();
+
+    if (!name || !priceValue || !stockValue) {
+      showNotification('Error al agregar el producto: completa todos los campos', 'error');
+      return;
+    }
+
+    if (priceValue.includes('-') || Number(priceValue) < 0) {
+      showNotification('Error al agregar el producto', 'error');
+      return;
+    }
+
+    const priceNumber = parseFloat(priceValue);
+    const stockNumber = parseInt(stockValue, 10);
+    const formattedPrice = `$${priceNumber.toLocaleString('es-CO')}`;
+
+    const productCard = createProductCard(name, formattedPrice, stockNumber);
+    productGrid.insertBefore(productCard, productGrid.firstChild);
+
+    showNotification('Producto creado exitosamente', 'success');
+
+    nameInput.value = '';
+    priceInput.value = '';
+    stockInput.value = '';
+  });
+
+  // Action menu toggle
+  const actionToggle = document.getElementById('action-toggle');
+  const actionMenu = document.getElementById('action-menu');
+
+  actionToggle.addEventListener('click', function (event) {
+    event.stopPropagation();
+    const isActive = actionMenu.classList.contains('active');
+    if (isActive) {
+      actionMenu.classList.remove('active');
+      actionToggle.classList.remove('active');
+    } else {
+      actionMenu.classList.add('active');
+      actionToggle.classList.add('active');
+    }
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener('click', function (event) {
+    if (!actionToggle.contains(event.target) && !actionMenu.contains(event.target)) {
+      actionMenu.classList.remove('active');
+      actionToggle.classList.remove('active');
+    }
+  });
+
+  const sidebarToggler = document.getElementById('sidebar-toggler');
+  const navMenu = document.querySelector('.nav-menu');
+
+  sidebarToggler.addEventListener('click', function (event) {
+    event.stopPropagation();
+    navMenu.classList.toggle('collapsed');
+  });
+</script>
+
+</body>
+</html>
+

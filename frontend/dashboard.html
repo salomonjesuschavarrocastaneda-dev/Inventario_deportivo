@@ -1,0 +1,324 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salomón Sport - Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080b13;
+      --panel: rgba(15, 23, 42, 0.94);
+      --border: rgba(255, 191, 64, 0.9);
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #fbbf24;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Roboto', sans-serif;
+      background: radial-gradient(circle at top, rgba(251, 191, 36, 0.1), transparent 30%),
+                  linear-gradient(180deg, #04050b 0%, #0f172a 100%);
+      color: var(--text);
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      padding: 32px 40px;
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-family: 'Oswald', sans-serif;
+      font-size: 2.4rem;
+    }
+
+    .header p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 680px;
+    }
+
+    .breadcrumbs {
+      display: inline-flex;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .breadcrumbs span::after {
+      content: '•';
+      margin: 0 10px;
+      opacity: 0.35;
+    }
+    .breadcrumbs span:last-child::after { content: ''; }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .metric-card {
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 28px;
+      padding: 24px;
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.14);
+    }
+
+    .metric-card h2 {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .metric-card strong {
+      font-size: 2.2rem;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .metric-card span {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .panel {
+      display: grid;
+      grid-template-columns: 1.4fr 0.9fr;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .panel-left,
+    .panel-right {
+      background: var(--panel);
+      padding: 24px;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .panel-left h3,
+    .panel-right h3 {
+      margin-top: 0;
+      font-size: 1.1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .chart-placeholder {
+      min-height: 260px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(251, 191, 36, 0.12), rgba(255, 255, 255, 0.03));
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-style: italic;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .table-wrapper { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 820px;
+    }
+
+    th, td {
+      padding: 16px 14px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    th { color: var(--muted); font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    td { color: #e5e7eb; }
+
+    .small-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(251, 191, 36, 0.14);
+      color: var(--accent);
+      font-size: 0.85rem;
+    }
+
+    .button-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-weight: 600;
+    }
+
+    .footer {
+      color: var(--muted);
+      margin-top: 18px;
+      font-size: 0.92rem;
+      border-top: 1px solid rgba(224, 228, 11, 0.08);
+      padding-top: 18px;
+    }
+
+    @media (max-width: 1080px) {
+      .container { padding: 24px; }
+      .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .panel { grid-template-columns: 1fr; }
+      table { min-width: 100%; }
+    }
+
+    @media (max-width: 640px) {
+      .grid-4 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="breadcrumbs">
+      <span>Inicio</span>
+      <span>Dashboard</span>
+    </div>
+    <header class="header">
+      <div>
+        <h1>Panel de Control</h1>
+        <p>Vista rápida del estado del inventario, usuarios y procesos del almacén deportivo.</p>
+      </div>
+      <a href="index.html" class="button-secondary">Volver a Inventario</a>
+    </header>
+
+    <section class="grid-4">
+      <article class="metric-card">
+        <h2>Productos totales</h2>
+        <strong>4,250</strong>
+        <span>+12% esta semana</span>
+      </article>
+      <article class="metric-card">
+        <h2>Valor en stock</h2>
+        <strong>$412,380</strong>
+        <span>+8% desde el mes pasado</span>
+      </article>
+      <article class="metric-card">
+        <h2>Usuarios activos</h2>
+        <strong>8</strong>
+        <span>Roles configurados</span>
+      </article>
+      <article class="metric-card">
+        <h2>Procesos abiertos</h2>
+        <strong>12</strong>
+        <span>Seguimiento en curso</span>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel-left">
+        <h3>Actividad de Inventario</h3>
+        <div class="chart-placeholder">Gráfico del flujo de entradas y salidas</div>
+      </div>
+      <div class="panel-right">
+        <h3>Últimos movimientos</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Movimiento</th>
+                <th>Categoría</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Recepción balón</td>
+                <td>Balones</td>
+                <td>08/04/2026</td>
+                <td><span class="badge-pill">Completado</span></td>
+              </tr>
+              <tr>
+                <td>Salida Zapatos</td>
+                <td>Calzado</td>
+                <td>07/04/2026</td>
+                <td><span class="badge-pill">En proceso</span></td>
+              </tr>
+              <tr>
+                <td>Inventario ropa</td>
+                <td>Ropa</td>
+                <td>06/04/2026</td>
+                <td><span class="badge-pill">Pendiente</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>Usuarios y accesos recientes</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Correo</th>
+              <th>Rol</th>
+              <th>Último acceso</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>María Gómez</td>
+              <td>maria@sports.com</td>
+              <td>Administrador</td>
+              <td>Hoy 09:12</td>
+            </tr>
+            <tr>
+              <td>Carlos Díaz</td>
+              <td>carlos@sports.com</td>
+              <td>Encargado</td>
+              <td>Ayer 15:47</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="footer">
+      Esta vista complementa la interfaz de inventario con métricas y seguimiento de procesos. El sistema está diseñado para una experiencia UI/UX consistente y lista para documentar su despliegue en Windows.
+    </footer>
+  </div>
+</body>
+</html>
