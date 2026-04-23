@@ -626,24 +626,65 @@
       flex-wrap: wrap;
     }
 
-    .btn-small {
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 0.82rem;
-      border: 1px solid transparent;
+    #product-image {
+      display: none;
+    }
+
+    .file-input-label {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #4ca125, #3aa019);
+      color: #ffffff;
+      font-weight: 700;
       cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      border: 2px solid transparent;
+      display: block;
+    }
+
+    .file-input-label:hover {
+      background: linear-gradient(135deg, #5cb635, #4ab525);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(76, 161, 37, 0.3);
+    }
+
+    .btn-small {
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      border: 2px solid transparent;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      flex: 1;
+      min-width: 80px;
+      text-align: center;
     }
 
     .btn-edit {
-      background: rgba(75, 201, 44, 0.12);
-      color: #5de41f;
-      border-color: rgba(59, 246, 90, 0.25);
+      background: linear-gradient(135deg, #52ecb2, #1fa878);
+      color: #ffffff;
+      border-color: rgba(82, 236, 178, 0.5);
+    }
+
+    .btn-edit:hover {
+      background: linear-gradient(135deg, #6dffca, #2db388);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(82, 236, 178, 0.3);
     }
 
     .btn-delete {
-      background: rgba(197, 21, 21, 0.12);
-      color: #d62a2a;
-      border-color: rgba(239, 68, 68, 0.25);
+      background: linear-gradient(135deg, #ff6b6b, #d62a2a);
+      color: #ffffff;
+      border-color: rgba(255, 107, 107, 0.5);
+    }
+
+    .btn-delete:hover {
+      background: linear-gradient(135deg, #ff8787, #e63946);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
     }
 
     .small-grid {
@@ -806,6 +847,8 @@
         <input id="product-name" type="text" placeholder="Nombre del producto" aria-label="Nombre del producto" required>
         <input id="product-price" type="number" placeholder="Precio" aria-label="Precio" required>
         <input id="product-stock" type="number" placeholder="Stock" aria-label="Stock" required>
+        <label for="product-image" class="file-input-label">Elegir archivo</label>
+        <input id="product-image" type="file" accept="image/*" aria-label="Imagen del producto">
         <button type="submit">Agregar Producto</button>
       </form>
 
@@ -1099,12 +1142,13 @@
     }, 3200);
   }
 
-  function createProductCard(name, price, stock) {
+  function createProductCard(name, price, stock, imageUrl) {
     const card = document.createElement('article');
     card.className = 'product-card';
+    const productData = {name, price: price.replace('$', ''), stock, image: imageUrl};
     card.innerHTML = `
       <div class="product-card-image">
-        <img src="assets/logo.png" alt="${name}">
+        <img src="${imageUrl}" alt="${name}">
       </div>
       <div class="product-card-body">
         <span class="product-status ${stock > 5 ? 'available' : 'low-stock'}">${stock > 5 ? 'Disponible' : 'Bajo stock'}</span>
@@ -1112,12 +1156,36 @@
         <p class="product-category">Producto creado</p>
         <p class="product-meta"><strong>${price}</strong> · ${stock} en stock</p>
         <div class="product-card-actions">
-          <button class="btn-small btn-edit">Editar</button>
+          <button class="btn-small btn-edit" data-product='${JSON.stringify(productData)}'>Editar</button>
           <button class="btn-small btn-delete">Eliminar</button>
         </div>
       </div>
     `;
     return card;
+  }
+
+  function attachProductActions(card) {
+    const editBtn = card.querySelector('.btn-edit');
+    const deleteBtn = card.querySelector('.btn-delete');
+
+    editBtn.addEventListener('click', function () {
+      const productData = JSON.parse(this.dataset.product);
+      
+      document.getElementById('product-name').value = productData.name;
+      document.getElementById('product-price').value = productData.price;
+      document.getElementById('product-stock').value = productData.stock;
+      
+      document.getElementById('product-form').scrollIntoView({ behavior: 'smooth' });
+      
+      card.remove();
+      
+      showNotification('Producto cargado para editar', 'success');
+    });
+
+    deleteBtn.addEventListener('click', function () {
+      card.remove();
+      showNotification('Producto eliminado', 'error');
+    });
   }
 
   productForm.addEventListener('submit', function (event) {
@@ -1126,6 +1194,7 @@
     const nameInput = document.getElementById('product-name');
     const priceInput = document.getElementById('product-price');
     const stockInput = document.getElementById('product-stock');
+    const imageInput = document.getElementById('product-image');
 
     const name = nameInput.value.trim();
     const priceValue = priceInput.value.trim();
@@ -1141,11 +1210,16 @@
       return;
     }
 
+    let imageUrl = 'assets/logo.png';
+    if (imageInput.files && imageInput.files[0]) {
+      imageUrl = URL.createObjectURL(imageInput.files[0]);
+    }
+
     const priceNumber = parseFloat(priceValue);
     const stockNumber = parseInt(stockValue, 10);
     const formattedPrice = `$${priceNumber.toLocaleString('es-CO')}`;
 
-    const productCard = createProductCard(name, formattedPrice, stockNumber);
+    const productCard = createProductCard(name, formattedPrice, stockNumber, imageUrl);
     productGrid.insertBefore(productCard, productGrid.firstChild);
 
     showNotification('Producto creado exitosamente', 'success');
@@ -1153,6 +1227,14 @@
     nameInput.value = '';
     priceInput.value = '';
     stockInput.value = '';
+    imageInput.value = '';
+
+    attachProductActions(productCard);
+  });
+
+  // Agregar eventos a productos existentes
+  document.querySelectorAll('.product-card').forEach(card => {
+    attachProductActions(card);
   });
 
   // Action menu toggle
