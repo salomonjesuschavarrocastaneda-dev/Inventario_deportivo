@@ -687,6 +687,101 @@
       box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
     }
 
+    .confirm-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .confirm-modal.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .confirm-modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 32px;
+      max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .confirm-modal-content h3 {
+      margin: 0 0 16px;
+      font-size: 1.2rem;
+      color: #111827;
+      font-family: 'Oswald', sans-serif;
+    }
+
+    .confirm-modal-content p {
+      margin: 0 0 24px;
+      color: #0f172a;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .confirm-modal-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-confirm-yes,
+    .btn-confirm-no {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+    }
+
+    .btn-confirm-yes {
+      background: linear-gradient(135deg, #ff6b6b, #d62a2a);
+      color: white;
+    }
+
+    .btn-confirm-yes:hover {
+      background: linear-gradient(135deg, #ff8787, #e63946);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(255, 107, 107, 0.3);
+    }
+
+    .btn-confirm-no {
+      background: #f1f5f9;
+      color: #111827;
+      border: 1px solid #e2e8f0;
+    }
+
+    .btn-confirm-no:hover {
+      background: #e2e8f0;
+      transform: translateY(-2px);
+    }
+
     .small-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1126,6 +1221,18 @@
   </main>
 </div>
 
+<!-- Modal de Confirmación -->
+<div id="confirm-modal" class="confirm-modal hidden">
+  <div class="confirm-modal-content">
+    <h3>Confirmar acción</h3>
+    <p id="confirm-message"></p>
+    <div class="confirm-modal-actions">
+      <button id="confirm-btn" class="btn-confirm-yes">Sí, eliminar</button>
+      <button id="cancel-btn" class="btn-confirm-no">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <script>
   const productForm = document.getElementById('product-form');
   const productGrid = document.querySelector('.product-grid');
@@ -1140,6 +1247,32 @@
     window.notificationTimer = setTimeout(() => {
       notification.classList.add('hidden');
     }, 3200);
+  }
+
+  function showConfirmModal(message, onConfirm) {
+    const modal = document.getElementById('confirm-modal');
+    const confirmMessage = document.getElementById('confirm-message');
+    const confirmBtn = document.getElementById('confirm-btn');
+    const cancelBtn = document.getElementById('cancel-btn');
+
+    confirmMessage.textContent = message;
+    modal.classList.remove('hidden');
+
+    const handleConfirm = () => {
+      onConfirm();
+      modal.classList.add('hidden');
+      confirmBtn.removeEventListener('click', handleConfirm);
+      cancelBtn.removeEventListener('click', handleCancel);
+    };
+
+    const handleCancel = () => {
+      modal.classList.add('hidden');
+      confirmBtn.removeEventListener('click', handleConfirm);
+      cancelBtn.removeEventListener('click', handleCancel);
+    };
+
+    confirmBtn.addEventListener('click', handleConfirm);
+    cancelBtn.addEventListener('click', handleCancel);
   }
 
   function createProductCard(name, price, stock, imageUrl) {
@@ -1183,8 +1316,10 @@
     });
 
     deleteBtn.addEventListener('click', function () {
-      card.remove();
-      showNotification('Producto eliminado exitosamente', 'success');
+      showConfirmModal('¿Estás seguro de que deseas eliminar este producto?', () => {
+        card.remove();
+        showNotification('Producto eliminado exitosamente', 'error');
+      });
     });
   }
 
