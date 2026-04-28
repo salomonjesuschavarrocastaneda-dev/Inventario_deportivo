@@ -21,7 +21,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.28), rgba(7, 10, 21, 0.50));
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.02), rgba(7, 10, 21, 0.05));
   z-index: 1;
 }
 
@@ -138,6 +138,9 @@ input:focus {
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-family: 'Oswald', sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .btn-submit:hover {
@@ -156,6 +159,78 @@ input:focus {
   color: #111827;
 }
 
+/* --- Tabs Navigation --- */
+.login-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 14px 16px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+  position: relative;
+  bottom: -2px;
+}
+
+.tab-btn:hover {
+  color: #475569;
+  background: rgba(255, 191, 64, 0.08);
+}
+
+.tab-btn.active {
+  color: #111827;
+  border-bottom-color: #FFC107;
+}
+
+/* --- Tab Content --- */
+.tab-content {
+  display: none;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Recover Info --- */
+.recover-info {
+  background: rgba(59, 130, 246, 0.1);
+  border-left: 4px solid #2563eb;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: #1e40af;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+.recover-step h3 {
+  color: #111827;
+  font-size: 1rem;
+  margin-bottom: 16px;
+  margin-top: 0;
+}
+
 @media (max-width: 500px) {
   .login-card {
     padding: 30px 24px;
@@ -163,6 +238,11 @@ input:focus {
 
   .login-header h1 {
     font-size: 1.7rem;
+  }
+
+  .tab-btn {
+    font-size: 0.85rem;
+    padding: 12px 8px;
   }
 }
 
@@ -173,3 +253,58 @@ input:focus {
   margin: 0 auto;
 }
 
+/* ===== FONDO DEPORTIVO PARA DASHBOARD ===== */
+
+/* Estilos base para el dashboard con fondo deportivo */
+body {
+  background-image: url('./assets/bg-sports.jpeg');
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+}
+
+/* Overlay oscuro para mejorar legibilidad del contenido */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 14, 26, 0.7);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Fondo deportivo con patrón hexagonal para las gráficas */
+.chart-background {
+  background: linear-gradient(135deg, rgba(10, 14, 26, 0.95) 0%, rgba(17, 24, 39, 0.95) 100%);
+  background-image: 
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><defs><pattern id="hex" x="0" y="0" width="150" height="150" patternUnits="userSpaceOnUse"><path d="M75,20 L130,50 L130,110 L75,140 L20,110 L20,50 Z" fill="none" stroke="rgba(251,191,36,0.08)" stroke-width="1.5"/></pattern><filter id="glow"><feGaussianBlur stdDeviation="2" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="1200" height="800" fill="url(%23hex)"/><g opacity="0.2" filter="url(%23glow)"><circle cx="100" cy="120" r="50" fill="rgba(251,191,36,0.4)"/><circle cx="1100" cy="150" r="60" fill="rgba(251,191,36,0.3)"/><circle cx="600" cy="700" r="70" fill="rgba(251,191,36,0.2)"/></g></svg>');
+  background-size: 600px 600px;
+  background-attachment: fixed;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-background::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(45deg, transparent 20%, rgba(251, 191, 36, 0.03) 50%, transparent 80%),
+    linear-gradient(-45deg, transparent 20%, rgba(251, 191, 36, 0.02) 50%, transparent 80%);
+  pointer-events: none;
+  animation: shimmer 8s infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
