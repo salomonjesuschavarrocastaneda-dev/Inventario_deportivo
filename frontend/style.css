@@ -138,9 +138,6 @@ input:focus {
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  font-family: 'Oswald', sans-serif;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
 }
 
 .btn-submit:hover {

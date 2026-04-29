@@ -1120,6 +1120,96 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* Estilos para el buscador */
+    .search-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 10px 16px;
+      border-radius: 50px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 191, 64, 0.3);
+      min-width: 280px;
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.15);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .search-container:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 191, 64, 0.5);
+      box-shadow: 0 12px 32px rgba(251, 191, 36, 0.25);
+    }
+
+    .search-icon {
+      font-size: 1.4rem;
+      color: #fbbf24;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .search-icon:hover {
+      transform: scale(1.15) rotate(20deg);
+    }
+
+    #search-input {
+      background: transparent;
+      border: none;
+      color: #fbbf24;
+      flex: 1;
+      outline: none;
+      font-size: 0.95rem;
+      font-family: 'Roboto', sans-serif;
+      caret-color: #fbbf24;
+      width: 100%;
+    }
+
+    #search-input::placeholder {
+      color: rgba(251, 191, 36, 0.6);
+    }
+
+    #search-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin-top: 8px;
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+      max-height: 320px;
+      overflow-y: auto;
+      display: none;
+      z-index: 1001;
+    }
+
+    .search-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #111827;
+    }
+
+    .search-item:hover {
+      background: rgba(251, 191, 36, 0.08);
+    }
+
+    .search-item-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .search-item-stock {
+      text-align: right;
+      font-weight: 700;
+      color: #fbbf24;
+    }
   </style>
 </head>
 <body>
@@ -1129,6 +1219,17 @@
   
   <div class="navbar-brand">
     <img src="assets/logo.png" alt="Logo Salomón Sport" class="navbar-logo">
+  </div>
+
+  <!-- Buscador -->
+  <div class="search-container" id="search-box">
+    <span class="search-icon" id="search-icon">🔍</span>
+    <input 
+      type="text" 
+      id="search-input" 
+      placeholder="Buscar productos..." 
+    >
+    <div id="search-dropdown"></div>
   </div>
   
   <div class="navbar-user">
@@ -1211,7 +1312,7 @@
       <div id="product-notification" class="notification hidden" role="status" aria-live="polite"></div>
 
       <div class="product-grid">
-        <article class="product-card">
+        <article class="product-card" data-producto-id="1">
           <div class="product-card-image">
             <img src="assets/balon-futbol.png" alt="Balón de fútbol">
           </div>
@@ -1227,7 +1328,7 @@
           </div>
         </article>
 
-        <article class="product-card">
+        <article class="product-card" data-producto-id="2">
           <div class="product-card-image">
             <img src="assets/tenis-mesa.png" alt="Tenis de mesa">
           </div>
@@ -1243,7 +1344,7 @@
           </div>
         </article>
 
-        <article class="product-card">
+        <article class="product-card" data-producto-id="3">
           <div class="product-card-image">
             <img src="assets/zapatos-futbol.png" alt="Zapatos de fútbol">
           </div>
@@ -1259,7 +1360,7 @@
           </div>
         </article>
 
-        <article class="product-card">
+        <article class="product-card" data-producto-id="4">
           <div class="product-card-image">
             <img src="assets/guantes-portero.png" alt="Guantes para portero">
           </div>
@@ -1275,7 +1376,7 @@
           </div>
         </article>
 
-        <article class="product-card">
+        <article class="product-card" data-producto-id="5">
           <div class="product-card-image">
             <img src="assets/bandas-elasticas.png" alt="Bandas elásticas">
           </div>
@@ -1291,7 +1392,7 @@
           </div>
         </article>
 
-        <article class="product-card">
+        <article class="product-card" data-producto-id="6">
           <div class="product-card-image">
             <img src="assets/mancuernas.png" alt="Mancuernas">
           </div>
@@ -1307,7 +1408,7 @@
           </div>
         </article>
 
-        <article class="product-card">
+        <article class="product-card" data-producto-id="7">
           <div class="product-card-image">
             <img src="assets/colchonetas.png" alt="Colchonetas">
           </div>
@@ -1323,7 +1424,7 @@
           </div>
         </article>
 
-        <article class="product-card">
+        <article class="product-card" data-producto-id="8">
           <div class="product-card-image">
             <img src="assets/trampolin-sportfitness.png" alt="Trampolín SportFitness">
           </div>
@@ -1339,7 +1440,7 @@
           </div>
         </article>
 
-        <article class="product-card">
+        <article class="product-card" data-producto-id="9">
           <div class="product-card-image">
             <img src="assets/botella-sport.png" alt="Botella Sport">
           </div>
@@ -1355,7 +1456,7 @@
           </div>
         </article>
 
-        <article class="product-card">
+        <article class="product-card" data-producto-id="10">
           <div class="product-card-image">
             <img src="assets/conjunto-deportivo.png" alt="Conjunto deportivo">
           </div>
@@ -1371,7 +1472,7 @@
           </div>
         </article>
 
-        <article class="product-card">
+        <article class="product-card" data-producto-id="11">
           <div class="product-card-image">
             <img src="assets/pelota-gimnasia.png" alt="Pelota de gimnasia">
           </div>
@@ -1704,6 +1805,102 @@
   sidebarToggler.addEventListener('click', function (event) {
     event.stopPropagation();
     navMenu.classList.toggle('collapsed');
+  });
+
+  // Funcionalidad del Buscador de Productos
+  const productos = [
+    { id: 1, nombre: 'balon de futbol', categoria: 'Balones', stock: 18, precio: '$289.900', imagen: 'assets/balon-futbol.png' },
+    { id: 2, nombre: 'raqueta de tenis de mesa', categoria: 'Tenis de mesa', stock: 42, precio: '$89.900', imagen: 'assets/tenis-mesa.png' },
+    { id: 3, nombre: 'zapatillas de futbol', categoria: 'Zapatos de fútbol', stock: 9, precio: '$199.900', imagen: 'assets/zapatos-futbol.png' },
+    { id: 4, nombre: 'guantes para portero', categoria: 'Guantes para portero', stock: 15, precio: '$159.900', imagen: 'assets/guantes-portero.png' },
+    { id: 5, nombre: 'bandas elasticas', categoria: 'Bandas elásticas', stock: 25, precio: '$69.900', imagen: 'assets/bandas-elasticas.png' },
+    { id: 6, nombre: 'mancuernas', categoria: 'Mancuernas', stock: 12, precio: '$59.900', imagen: 'assets/mancuernas.png' },
+    { id: 7, nombre: 'colchonetas', categoria: 'Colchonetas', stock: 8, precio: '$79.900', imagen: 'assets/colchonetas.png' },
+    { id: 8, nombre: 'trampolin sportfitness', categoria: 'Trampolín SportFitness', stock: 6, precio: '$119.900', imagen: 'assets/trampolin-sportfitness.png' },
+    { id: 9, nombre: 'botella sport', categoria: 'Botella Sport', stock: 30, precio: '$99.900', imagen: 'assets/botella-sport.png' },
+    { id: 10, nombre: 'conjunto deportivo', categoria: 'Conjunto deportivo', stock: 10, precio: '$349.900', imagen: 'assets/conjunto-deportivo.png' },
+    { id: 11, nombre: 'pelota de gimnasia', categoria: 'Pelota de gimnasia', stock: 14, precio: '$69.900', imagen: 'assets/pelota-gimnasia.png' }
+  ];
+
+  const searchInput = document.getElementById('search-input');
+  const searchDropdown = document.getElementById('search-dropdown');
+  const searchIcon = document.getElementById('search-icon');
+  const searchBox = document.getElementById('search-box');
+
+  function buscarProductos(termino) {
+    if (!termino) return [];
+    return productos.filter(p => 
+      p.nombre.toLowerCase().includes(termino.toLowerCase()) ||
+      p.categoria.toLowerCase().includes(termino.toLowerCase())
+    );
+  }
+
+  function mostrarResultados(resultados) {
+    searchDropdown.innerHTML = '';
+    
+    if (resultados.length === 0) {
+      searchDropdown.innerHTML = `
+        <div style="padding: 20px; text-align: center; color: #111827; font-size: 0.95rem;">
+          No se encontraron productos
+        </div>
+      `;
+    } else {
+      resultados.forEach(producto => {
+        const item = document.createElement('div');
+        item.className = 'search-item';
+        item.innerHTML = `
+          <div>
+            <div class="search-item-name">${producto.nombre}</div>
+            <div style="font-size: 0.8rem; color: #666;">${producto.categoria}</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="search-item-stock">${producto.stock} en stock</div>
+            <div style="font-size: 0.8rem; color: #666;">${producto.precio}</div>
+          </div>
+        `;
+        
+        item.addEventListener('click', () => {
+          const card = document.querySelector(`[data-producto-id="${producto.id}"]`);
+          if (card) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            card.style.boxShadow = '0 0 30px rgba(251, 191, 36, 0.5)';
+            setTimeout(() => {
+              card.style.boxShadow = '0 24px 45px rgba(0, 0, 0, 0.12)';
+            }, 2000);
+          }
+          searchInput.value = '';
+          searchDropdown.style.display = 'none';
+        });
+        
+        searchDropdown.appendChild(item);
+      });
+    }
+    
+    searchDropdown.style.display = 'block';
+  }
+
+  searchInput.addEventListener('input', (e) => {
+    const termino = e.target.value.trim();
+    if (termino.length > 0) {
+      const resultados = buscarProductos(termino);
+      mostrarResultados(resultados);
+    } else {
+      searchDropdown.style.display = 'none';
+    }
+  });
+
+  searchIcon.addEventListener('click', () => {
+    if (searchDropdown.style.display === 'none' || searchDropdown.style.display === '') {
+      mostrarResultados(productos);
+    } else {
+      searchDropdown.style.display = 'none';
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!searchBox.contains(e.target)) {
+      searchDropdown.style.display = 'none';
+    }
   });
 </script>
 
