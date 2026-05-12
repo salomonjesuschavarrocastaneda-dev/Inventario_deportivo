@@ -427,201 +427,294 @@
   </div>
 
   <script>
+    // API Configuration
+    const API_BASE_URL = 'http://localhost:8080/api';
+
+    // Variables globales
+    let products = [];
+    let movementsChart = null;
+    let trendChart = null;
+    let categoryChart = null;
+
+    // Cargar datos de la API
+    async function loadDashboardData() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/productos`);
+        if (!response.ok) throw new Error('Error al cargar productos');
+        
+        products = await response.json();
+        updateDashboard();
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    // Actualizar todo el dashboard
+    function updateDashboard() {
+      updateMetrics();
+      updateCharts();
+      updateTopProducts();
+    }
+
+    // Actualizar métricas
+    function updateMetrics() {
+      // Productos totales
+      const totalProducts = products.reduce((sum, p) => sum + p.stock, 0);
+      document.querySelectorAll('.metric-card')[0].querySelector('strong').textContent = totalProducts;
+
+      // Valor total del inventario
+      const totalValue = products.reduce((sum, p) => sum + (p.precio * p.stock), 0);
+      document.querySelectorAll('.metric-card')[1].querySelector('strong').textContent = `$${totalValue.toLocaleString('es-CO')}`;
+
+      // Productos con bajo stock (< 10)
+      const lowStockProducts = products.filter(p => p.stock < 10).length;
+      document.querySelectorAll('.metric-card')[2].querySelector('strong').textContent = lowStockProducts;
+
+      // Total de productos en catálogo
+      document.querySelectorAll('.metric-card')[3].querySelector('strong').textContent = products.length;
+    }
+
+    // Actualizar gráficos
+    function updateCharts() {
+      updateMovementsChart();
+      updateTrendChart();
+      updateCategoryChart();
+    }
+
+    // Gráfico de Movimientos Mensuales (Stock actual vs. valor)
+    function updateMovementsChart() {
+      const movementsCtx = document.getElementById('movementsChart').getContext('2d');
+      
+      if (movementsChart) movementsChart.destroy();
+
+      const topProducts = products.sort((a, b) => b.stock - a.stock).slice(0, 6);
+      
+      movementsChart = new Chart(movementsCtx, {
+        type: 'bar',
+        data: {
+          labels: topProducts.map(p => p.nombre),
+          datasets: [
+            {
+              label: 'Stock Disponible',
+              data: topProducts.map(p => p.stock),
+              backgroundColor: '#3b82f6',
+              borderRadius: 10,
+              borderSkipped: false,
+              borderColor: 'transparent'
+            },
+            {
+              label: 'Valor Unitario',
+              data: topProducts.map(p => p.precio),
+              backgroundColor: '#fbbf24',
+              borderRadius: 10,
+              borderSkipped: false,
+              borderColor: 'transparent'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          height: 320,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                usePointStyle: true,
+                padding: 15,
+                color: 'rgba(229, 231, 235, 0.9)',
+                boxWidth: 8,
+                boxHeight: 8
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                color: 'rgba(148, 163, 184, 0.8)'
+              },
+              grid: {
+                color: 'rgba(255, 255, 255, 0.08)',
+                drawBorder: false
+              }
+            },
+            x: {
+              ticks: {
+                color: 'rgba(148, 163, 184, 0.8)'
+              },
+              grid: {
+                display: false,
+                drawBorder: false
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Gráfico de Tendencia (Valor total vs. Stock total)
+    function updateTrendChart() {
+      const trendCtx = document.getElementById('trendChart').getContext('2d');
+      
+      if (trendChart) trendChart.destroy();
+
+      const totalStock = products.reduce((sum, p) => sum + p.stock, 0);
+      const totalValue = products.reduce((sum, p) => sum + (p.precio * p.stock), 0);
+      const avgPrice = totalValue / (totalStock || 1);
+
+      trendChart = new Chart(trendCtx, {
+        type: 'line',
+        data: {
+          labels: ['Stock Total', 'Valor Inventario', 'Precio Promedio'],
+          datasets: [
+            {
+              label: 'Métrica',
+              data: [totalStock, totalValue / 100, avgPrice],
+              borderColor: '#22c55e',
+              backgroundColor: 'rgba(34, 197, 94, 0.1)',
+              borderWidth: 3,
+              tension: 0.4,
+              fill: true,
+              pointBackgroundColor: '#22c55e',
+              pointBorderColor: '#22c55e',
+              pointRadius: 6,
+              pointHoverRadius: 8,
+              pointBorderWidth: 2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          height: 320,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                usePointStyle: true,
+                padding: 15,
+                color: 'rgba(229, 231, 235, 0.9)',
+                boxWidth: 8,
+                boxHeight: 8
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              ticks: {
+                color: 'rgba(148, 163, 184, 0.8)'
+              },
+              grid: {
+                color: 'rgba(255, 255, 255, 0.08)',
+                drawBorder: false
+              }
+            },
+            x: {
+              ticks: {
+                color: 'rgba(148, 163, 184, 0.8)'
+              },
+              grid: {
+                display: false,
+                drawBorder: false
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Gráfico de Distribución por Rango de Precio
+    function updateCategoryChart() {
+      const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+      
+      if (categoryChart) categoryChart.destroy();
+
+      // Categorías por rango de precio
+      const categories = {
+        'Económico (<100)': 0,
+        'Estándar (100-500)': 0,
+        'Premium (500-1000)': 0,
+        'Lujo (>1000)': 0
+      };
+
+      products.forEach(p => {
+        if (p.precio < 100) categories['Económico (<100)']++;
+        else if (p.precio < 500) categories['Estándar (100-500)']++;
+        else if (p.precio < 1000) categories['Premium (500-1000)']++;
+        else categories['Lujo (>1000)']++;
+      });
+
+      categoryChart = new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(categories),
+          datasets: [
+            {
+              data: Object.values(categories),
+              backgroundColor: [
+                '#3b82f6',
+                '#fbbf24',
+                '#22c55e',
+                '#a855f7'
+              ],
+              borderColor: '#0a0e1a',
+              borderWidth: 3,
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                usePointStyle: true,
+                padding: 14,
+                color: 'rgba(229, 231, 235, 0.9)',
+                font: {
+                  size: 12
+                },
+                boxWidth: 10,
+                boxHeight: 10
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Actualizar productos más costosos
+    function updateTopProducts() {
+      const topProductsList = document.getElementById('topProductsList');
+      topProductsList.innerHTML = '';
+
+      const sortedProducts = [...products].sort((a, b) => b.precio - a.precio).slice(0, 5);
+
+      sortedProducts.forEach((product, index) => {
+        const item = document.createElement('div');
+        item.className = 'stat-item';
+        item.innerHTML = `
+          <span class="stat-item-label">${index + 1}. ${product.nombre}</span>
+          <span class="stat-item-value">$${product.precio.toLocaleString('es-CO')}</span>
+        `;
+        topProductsList.appendChild(item);
+      });
+    }
+
     // Configuración global de Chart.js
     Chart.defaults.color = 'rgba(148, 163, 184, 0.9)';
     Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
     Chart.defaults.font.family = "'Roboto', sans-serif";
 
-    // Gráfico de Movimientos Mensuales
-    const movementsCtx = document.getElementById('movementsChart').getContext('2d');
-    new Chart(movementsCtx, {
-      type: 'bar',
-      data: {
-        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-        datasets: [
-          {
-            label: 'Entradas',
-            data: [45, 52, 48, 65, 72, 68],
-            backgroundColor: '#3b82f6',
-            borderRadius: 10,
-            borderSkipped: false,
-            borderColor: 'transparent'
-          },
-          {
-            label: 'Salidas',
-            data: [38, 41, 36, 52, 58, 55],
-            backgroundColor: '#fbbf24',
-            borderRadius: 10,
-            borderSkipped: false,
-            borderColor: 'transparent'
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        height: 320,
-        plugins: {
-          legend: {
-            position: 'top',
-            labels: {
-              usePointStyle: true,
-              padding: 15,
-              color: 'rgba(229, 231, 235, 0.9)',
-              boxWidth: 8,
-              boxHeight: 8
-            }
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              color: 'rgba(148, 163, 184, 0.8)'
-            },
-            grid: {
-              color: 'rgba(255, 255, 255, 0.08)',
-              drawBorder: false
-            }
-          },
-          x: {
-            ticks: {
-              color: 'rgba(148, 163, 184, 0.8)'
-            },
-            grid: {
-              display: false,
-              drawBorder: false
-            }
-          }
-        }
-      }
-    });
+    // Cargar datos al iniciar
+    window.addEventListener('load', loadDashboardData);
 
-    // Gráfico de Tendencia de Inventario
-    const trendCtx = document.getElementById('trendChart').getContext('2d');
-    new Chart(trendCtx, {
-      type: 'line',
-      data: {
-        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-        datasets: [
-          {
-            label: 'Stock Total',
-            data: [2100, 2250, 2400, 2600, 2750, 2850],
-            borderColor: '#22c55e',
-            backgroundColor: 'rgba(34, 197, 94, 0.1)',
-            borderWidth: 3,
-            tension: 0.4,
-            fill: true,
-            pointBackgroundColor: '#22c55e',
-            pointBorderColor: '#22c55e',
-            pointRadius: 6,
-            pointHoverRadius: 8,
-            pointBorderWidth: 2
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        height: 320,
-        plugins: {
-          legend: {
-            position: 'top',
-            labels: {
-              usePointStyle: true,
-              padding: 15,
-              color: 'rgba(229, 231, 235, 0.9)',
-              boxWidth: 8,
-              boxHeight: 8
-            }
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: false,
-            ticks: {
-              color: 'rgba(148, 163, 184, 0.8)'
-            },
-            grid: {
-              color: 'rgba(255, 255, 255, 0.08)',
-              drawBorder: false
-            }
-          },
-          x: {
-            ticks: {
-              color: 'rgba(148, 163, 184, 0.8)'
-            },
-            grid: {
-              display: false,
-              drawBorder: false
-            }
-          }
-        }
-      }
-    });
-
-    // Gráfico de Distribución por Categoría
-    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-    new Chart(categoryCtx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Balones', 'Calzado', 'Ropa', 'Accesorios', 'Equipos'],
-        datasets: [
-          {
-            data: [280, 320, 250, 190, 180],
-            backgroundColor: [
-              '#3b82f6',
-              '#fbbf24',
-              '#22c55e',
-              '#a855f7',
-              '#ef4444',
-            ],
-            borderColor: '#0a0e1a',
-            borderWidth: 3,
-            borderRadius: 4
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: {
-              usePointStyle: true,
-              padding: 14,
-              color: 'rgba(229, 231, 235, 0.9)',
-              font: {
-                size: 12
-              },
-              boxWidth: 10,
-              boxHeight: 10
-            }
-          }
-        }
-      }
-    });
-
-    // Productos Más Vendidos
-    const topProducts = [
-      { nombre: '1. Balón Profesional', unidades: 150 },
-      { nombre: '2. Zapatos Running', unidades: 128 },
-      { nombre: '3. Camiseta Deportiva', unidades: 95 },
-      { nombre: '4. Mochila Deportiva', unidades: 87 },
-      { nombre: '5. Pelota Inteligente', unidades: 72 }
-    ];
-
-    const topProductsList = document.getElementById('topProductsList');
-    topProducts.forEach((product) => {
-      const item = document.createElement('div');
-      item.className = 'stat-item';
-      item.innerHTML = `
-        <span class="stat-item-label">${product.nombre}</span>
-        <span class="stat-item-value">${product.unidades}</span>
-      `;
-      topProductsList.appendChild(item);
-    });
+    // Recargar datos cada 5 segundos
+    setInterval(loadDashboardData, 5000);
   </script>
 </body>
 </html>
